@@ -30,6 +30,8 @@ import lxml
 import json
 import time
 
+import re
+
 
 # url = 'https://www.flipkart.com/'
 
@@ -42,68 +44,365 @@ headers = {
 
 print('start...')
 
+# # #         = 1 =
+# # #
+# # # # START of "Init..."
+# # # #
+# chrome_path = "./chromedriver.exe"
+#
+# options = webdriver.ChromeOptions()
+# options.headless = False
+# options.add_argument("--incognito")
+# options.add_argument("start-maximized")
+# #
+# options.add_argument('--disable-blink-features=AutomationControlled')
+# #
+# options.add_experimental_option("excludeSwitches", ["enable-logging"])
+# options.add_experimental_option('useAutomationExtension', False)
+# browser = webdriver.Chrome(options=options, executable_path=chrome_path)
+# # # #
+# # # # END of "Init..."
+# #
+# browser.implicitly_wait(1.5)
+#
+#
+# start_ = True
+#
+# url_ = []
+#
+# for pg in range(1, 50):
+#
+#     if start_:
+#         start_ = False
+#         url = f'https://www.viator.com/Iceland/d55-ttd'
+#     else:
+#         url = f'https://www.viator.com/Iceland/d55-ttd/{pg}'
+#
+#     browser.get(url)
+#
+#     first_pg_xp = '//*[@id="pagination"]/li[2]/a'
+#     start_time = time.time()
+#     try:
+#         WebDriverWait(browser, 15).until(EC.element_to_be_clickable((By.XPATH, first_pg_xp)))
+#     except:
+#         pass
+#     finish_time = time.time() - start_time
+#     print(f'Page = {pg}     FP: {finish_time}')
+#
+#     source_html = browser.page_source
+#     # # запись СПАРСЕНОЙ инфы в ХТМЛ-файл
+#     # with open('index.html', 'w', encoding='utf-8') as file:
+#     #     file.write(source_html)
+#
+#     soup = BeautifulSoup(source_html, 'lxml')
+#
+#     el_links_ = soup.find_all("h2", class_='product-card-row-title mb-0 pt-md-4')
+#     for i in el_links_:
+#         el_link_ = i.find('a').get('href')
+#         el_link = f'https://www.viator.com{el_link_}'
+#         url_.append(el_link)
+#
+# # запись ссылок из СПИСКА в файл
+# with open('urls.txt', 'a', encoding='utf-8') as file:
+#     for url in url_:
+#         file.write(f'{url}\n')
+# #
+# # #         = End of 1 =
+
+
+start_time = time.time()
+
+ele_list = []
+ele_info = []
+
+async def get_page_data(session, link_):
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "User-Agent": f'{ua_}'
+    }
+
+    print(f"start...")
+
+    global ele_list
+    global ele_info
+
+
+
+    async with session.get(url=link_, headers=headers) as response:
+
+        response_text = await response.text()
+        soup = BeautifulSoup(response_text, 'lxml')
+
+        url_ = link_
+
+        try:
+            name_ = soup.find('h1', class_='title__1Wwg title2__C3R7').text
+            print(name_)
+        except:
+            name_ = 'NONE'
+        print(f'name: {name_}')
+
+        try:
+            r_c_ = soup.find('div', class_='ratingReviews__2CyF').text
+            #review_count_ = re.findall(r'\d+[,.]\d+', r_c_)
+            review_count = re.findall(r'\d+[,.]|\d+\d+', r_c_)
+            try:
+                review_count_ = review_count[0].replace(',' '')
+            except:
+                review_count_ = review_count[0]
+        except:
+            review_count_ = 'NONE'
+        print(f'review_count: {review_count_}')
+
+
+        try:
+            total_rating_ = soup.find('span', class_='averageRatingValue__Q1ep').text
+        except:
+            total_rating_ = 'NONE'
+        print(f'total_rating: {total_rating_}')
+
+        breadcrumb_ = soup.find_all('li', class_='crumb__7IyR')#.text
+        str_ = ''
+        for i in breadcrumb_:
+            str_ += i.text + ' > '
+        breadcrumb_ = str_[0:-2]
+        print(f'breadcrumb: {breadcrumb_}')
+
+        try:
+            price_ = soup.find('span', class_='moneyView__2HPx').text
+        except:
+            price_ = 'NONE'
+        print(f'price: {price_}')
+
+        try:
+            overview_ = soup.find('div', class_='overviewWrapper__bMs4').find('div').find('div').text
+        except:
+            overview_ = 'NONE'
+        print(f'overview_: {overview_}')
+
+        departure_points = []
+        try:
+            departure__ = soup.find('title__1Wwg title4__AH0S')
+
+            # ...достаём: nonce = EeYhZzO0CgtoXgxP
+            #
+            script_all = soup.find_all('script')
+            try:
+                script_ = str(re.findall('\"locationPoints\":(.*?)\"dropOffPoints\":', str(script_all[5]))).\
+                        replace("['[{\"locationCategory", "[{\"locationCategory"). \
+                        replace("}}],']", "}}]"). \
+                        replace("\\", "_")
+            except:
+                pass
+
+            try:
+                script_new = str(re.findall('\"pageModel\":(.*?)\"pageMeta\":', str(script_all[5]))).\
+                        replace("['{\"destinationId", "{\"destinationId"). \
+                        replace("}}},']", "}}}"). \
+                        replace("\\", "_")
+            except:
+                pass
+
+            # print('********************************************************')
+            #
+            # print(script_new)
+            #
+            # # with open('_my_json555.json.', 'w', encoding='utf-8') as file:
+            # #     json.dump(script_new, file, indent=4, ensure_ascii=False)
+            #
+            # print('********************************************************')
+
+
+
+
+
+            if script_ != "['[],']":
+                with open('_my_json.json.', 'w', encoding='utf-8') as file:
+                    # json.dump(json_all, file, indent=4, ensure_ascii=False)
+                    file.write(script_)
+
+                with open("_my_json.json", "r") as read_file:
+                    data_ = json.load(read_file)
+
+                departure_points = []
+
+                for y in range(1, 100):
+                    try:
+                        ele_label_ = f"{data_[y]['locationData']['location']['label']}"
+                        #print(f'{y} --> {ele_label_}')
+                        departure_points.append(ele_label_)
+                    except:
+                        break
+        except:
+            pass
+
+        # departure_time
+        try:
+            departure_time_ = soup.find('div', class_='departureTimeLocation__3gU_').text
+        except:
+            departure_time_ = 'NONE'
+        print(f'departure_time: {departure_time_}')
+
+        # included
+
+        with open('_my_json555.json.', 'w', encoding='utf-8') as file:
+            #json.dump(script_new, file, indent=4, ensure_ascii=False)
+            file.write(script_new)
+
+        with open("_my_json555.json", "r") as read_file:
+            ddd = json.load(read_file)
+
+
+        included_ = ddd['product']['description']['inclusions']['features']
+
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        try:
+            what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
+        except:
+            what_to_expect_ = 'NONE'
+        print(f'what_to_expect: {what_to_expect_}')
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        addtional_info_ = ddd['product']['description']['additionalInfo']['features']
+        cancelation_policy_ = ddd['product']['description']['cancellationPolicy']['policies']
+
+        # photo
+        traveler_photos_count = ddd['product']['mediaGallery']['travellerImagesCount']
+        traveler_photos_ = []
+
+        for f in range(traveler_photos_count):
+            traveler_photos_.append((ddd['product']['mediaGallery']['travellerImages'][f]['fullSizeImage']['src']).replace('__u002F', '/'))
+
+        # reviews
+        reviews_count = len(ddd['product']['reviews']['viatorReviews'])
+
+
+        reviews_ = []
+
+
+        for r in range(reviews_count):
+            reviews_.append(
+                {
+                    "title": ddd['product']['reviews']['viatorReviews'][r]['title'],
+                    "rating": ddd['product']['reviews']['viatorReviews'][r]['rating'],
+                    "user": ddd['product']['reviews']['viatorReviews'][r]['user']['nickName'],
+                    "date": ddd['product']['reviews']['viatorReviews'][r]['publishedAt'],
+                    "text": ddd['product']['reviews']['viatorReviews'][r]['text']
+                }
+            )
+
+
+
+        print('********************************************************')
+        ele_info.append(
+            {
+                "url": url_,
+                "name": name_,
+                "review_count": review_count_,
+                "total_rating": total_rating_,
+                "breadcrumb": breadcrumb_,
+                "price": price_,
+                "overview": overview_,
+                "departure_and_return": {
+                    'departure_points': departure_points,
+                    'departure_time': departure_time_
+                },
+                "included": included_,
+                "what_to_expect": what_to_expect_,
+                "addtional_info": addtional_info_,
+                "cancelation_policy": cancelation_policy_,
+                "traveler_photos": traveler_photos_,
+                "reviews": reviews_
+             }
+        )
+        print('********************************************************')
+
+
+
+
+
+
+
+async def gather_data():
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "User-Agent": f'{ua_}'
+    }
+
+    # читаю ССЫЛКИ из ранее созданного файла
+    # !!! ОБРЕЗАЮ СИМВОЛ ПЕРЕНОСА СТРОКИ !!!
+    with open('urls.txt') as file:
+        url_list = [line.strip() for line in file.readlines()]
+
+    page_count = len(url_list)
+    print(f'PAG.: {page_count}')
+
+    async with aiohttp.ClientSession() as session:
+        # try:
+        #     ele_link_ = soup.find('a', {'name': 'business-unit-card'}).get('href')
+        # except Exception as e:
+        #     print(e)
+
+        tasks = []
+
+        # for i in range(1, page_count):
+        #for url_ in enumerate(url_list[0:1]):
+        for url_ in url_list[0:1]:
+        #for url_ in url_list:
+            # for i in range(1, 2):
+
+            print(f'URL -------> {url_}')
+
+            task = asyncio.create_task(get_page_data(session, url_))
+            tasks.append(task)
+
+        await asyncio.gather(*tasks)
+
+        # # ЗАЩИТА от БАНА!!!
+        # time.sleep(randrange(0, 2))
+        # print(f'Обработал {i} / {page_count}')
+
+
+def main():
+    asyncio.run(gather_data())
+
+    finish_time = time.time() - start_time
+
+    # with open('test.txt', 'w+', encoding='utf-8') as file:
+    #     file.write(ele_info)
+
+    with open('_my_json2022.json.', 'w', encoding='utf-8') as file:
+        json.dump(ele_info, file, indent=4, ensure_ascii=False)
+
+    # with open('out.json', 'w+', encoding='utf-8') as file:
+    #     json.dump(ele_list, file, indent=4, ensure_ascii=False)
+
+    print(f"TIME: {finish_time}")
+    # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
+    # print(f"TIME_now: {cur_time}")
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    # print(sys.version_info[0])
+    # ЗАПЛАТКА!!! Блок выпадания ОШИБКИ под виндой...
+    if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'):
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+    # asyncio.run(main())
+    main()
+
+
 # # 1
 # #
-# # # START of "Init..."
-# # #
-chrome_path = "./chromedriver.exe"
+# # запись СПАРСЕНОЙ инфы в ХТМЛ-файл
+# with open('index.html', 'w', encoding='utf-8') as file:
+#     file.write(source_html)
+#pagination_count = soup.find('div', {"id": "ajaxPaging-product"}).find('ul', class_='product-pagination js-pagination').find_all('li', class_='pagination-item')[-1].text.strip()
 
-options = webdriver.ChromeOptions()
-options.headless = False
-options.add_argument("--incognito")
-options.add_argument("start-maximized")
-#
-options.add_argument('--disable-blink-features=AutomationControlled')
-#
-options.add_experimental_option("excludeSwitches", ["enable-logging"])
-options.add_experimental_option('useAutomationExtension', False)
-browser = webdriver.Chrome(options=options, executable_path=chrome_path)
-# # #
-# # # END of "Init..."
-#
-browser.implicitly_wait(1.5)
-
-
-start_ = True
-
-url_ = []
-
-for pg in range(1, 50):
-
-    if start_:
-        start_ = False
-        url = f'https://www.viator.com/Iceland/d55-ttd'
-    else:
-        url = f'https://www.viator.com/Iceland/d55-ttd/{pg}'
-
-    browser.get(url)
-
-    first_pg_xp = '//*[@id="pagination"]/li[2]/a'
-    start_time = time.time()
-    try:
-        WebDriverWait(browser, 15).until(EC.element_to_be_clickable((By.XPATH, first_pg_xp)))
-    except:
-        pass
-    finish_time = time.time() - start_time
-    print(f'Page = {pg}     FP: {finish_time}')
-
-    source_html = browser.page_source
-    # # запись СПАРСЕНОЙ инфы в ХТМЛ-файл
-    # with open('index.html', 'w', encoding='utf-8') as file:
-    #     file.write(source_html)
-
-    soup = BeautifulSoup(source_html, 'lxml')
-
-    el_links_ = soup.find_all("h2", class_='product-card-row-title mb-0 pt-md-4')
-    for i in el_links_:
-        el_link_ = i.find('a').get('href')
-        print(el_link_)
-
-        el_link = f'https://www.viator.com{el_link_}'
-        url_.append(el_link)
-
-# запись ссылок из СПИСКА в файл
-with open('urls.txt', 'a', encoding='utf-8') as file:
-    for url in url_:
-        file.write(f'{url}\n')
-
+# with open("index.html", "r", encoding='utf-8') as f:
+#     source_html = f.read()
