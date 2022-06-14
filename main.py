@@ -50,22 +50,25 @@ print('start...')
 # # #
 # # # # START of "Init..."
 # # # #
-# chrome_path = "./chromedriver.exe"
+chrome_path = "./chromedriver.exe"
+
+options = webdriver.ChromeOptions()
+options.headless = False
+options.add_argument("--incognito")
+options.add_argument("start-maximized")
 #
-# options = webdriver.ChromeOptions()
-# options.headless = False
-# options.add_argument("--incognito")
-# options.add_argument("start-maximized")
-# #
-# options.add_argument('--disable-blink-features=AutomationControlled')
-# #
-# options.add_experimental_option("excludeSwitches", ["enable-logging"])
-# options.add_experimental_option('useAutomationExtension', False)
-# browser = webdriver.Chrome(options=options, executable_path=chrome_path)
+# options.add_argument("--headless")
+options.add_argument('--disable-blink-features=AutomationControlled')
+#
+options.add_experimental_option("excludeSwitches", ["enable-logging"])
+options.add_experimental_option('useAutomationExtension', False)
+browser = webdriver.Chrome(options=options, executable_path=chrome_path)
+
+browser.implicitly_wait(1.5)
 # # # #
 # # # # END of "Init..."
 # #
-# browser.implicitly_wait(1.5)
+
 #
 #
 # start_ = True
@@ -117,6 +120,9 @@ start_time = time.time()
 ele_list = []
 ele_info = []
 
+tmp_y = 0
+tmp_n = 0
+
 async def get_page_data(session, link_, str_num):
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -127,6 +133,7 @@ async def get_page_data(session, link_, str_num):
 
     global ele_list
     global ele_info
+    global tmp_y, tmp_n
 
 
     async with session.get(url=link_, headers=headers) as response:
@@ -134,7 +141,7 @@ async def get_page_data(session, link_, str_num):
         response_text = await response.text()
         soup = BeautifulSoup(response_text, 'lxml')
 
-        # # ЗАЩИТА от БАНА!!!
+        # # # ЗАЩИТА от БАНА!!!
         # time.sleep(randrange(1, 2))
 
         # print(f'str_num: {str_num}')
@@ -146,7 +153,7 @@ async def get_page_data(session, link_, str_num):
             name_ = soup.find('h1', class_='title__1Wwg title2__C3R7').text
         except:
             name_ = 'NONE'
-        print(f'name: {name_}')
+        # print(f'name: {name_}')
 
         try:
             r_c_ = soup.find('div', class_='ratingReviews__2CyF').text
@@ -154,7 +161,7 @@ async def get_page_data(session, link_, str_num):
             review_count_ = str(review_count).replace("['", "").replace("']", "").replace(r",", "")
         except:
             review_count_ = 'NONE'
-        print(f'review_count: {review_count_}')
+        # print(f'review_count: {review_count_}')
 
 
         try:
@@ -197,18 +204,8 @@ async def get_page_data(session, link_, str_num):
             except:
                 pass
 
-            try:
-                script_new = str(re.findall('\"pageModel\":(.*?)\"pageMeta\":', str(script_all[5]))).\
-                        replace("['{\"destinationId", "{\"destinationId"). \
-                        replace("}}},']", "}}}"). \
-                        replace("\\", "_"). \
-                        replace('__\"', '__*')
-            except:
-                pass
 
-            with open(f'_my_script_new_{str_num}.json.', 'w', encoding='utf-8') as file:
-                # json.dump(json_all, file, indent=4, ensure_ascii=False)
-                file.write(script_new)
+
 
 
             if script_ != "['[],']":
@@ -218,12 +215,7 @@ async def get_page_data(session, link_, str_num):
                 #
                 # with open(f"_my_json_{str_num}.json", "r", encoding='utf-8') as read_file:
                 #     data_ = json.load(read_file)
-
-                try:
-                    data_ = json.loads(script_)
-                except:
-                    pass
-
+                data_ = json.loads(script_)
 
                 departure_points = []
 
@@ -246,32 +238,103 @@ async def get_page_data(session, link_, str_num):
         # print(f'departure_time: {departure_time_}')
 
         # included
+        #
+        script_new = str(re.findall('\"pageModel\":(.*?)\"pageMeta\":', str(script_all[5]))). \
+            replace("['{\"destinationId", "{\"destinationId"). \
+            replace("}}},']", "}}}"). \
+            replace("\\", "_"). \
+            replace('__\"', '__*')
 
-        # with open(f'_my_json555_{str_num}.json.', 'w', encoding='utf-8') as file:
-        #     #json.dump(script_new, file, indent=4, ensure_ascii=False)
+        # with open(f'_my_script_new_{str_num}.json.', 'w', encoding='utf-8') as file:
+        #     # json.dump(json_all, file, indent=4, ensure_ascii=False)
         #     file.write(script_new)
-        #
-        #
-        # with open(f"_my_json555_{str_num}.json", "r", encoding='utf-8') as read_file:
-        #     ddd = json.load(read_file)
 
-        try:
-            ddd = json.loads(script_new)
-        except:
-            pass
-
-
+        ddd = json.loads(script_new)
 
         included_ = ddd['product']['description']['inclusions']['features']
         # print(f'included: {included_}')
 
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # try:
-        #     what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
+        #     what_to_expect_ = soup.find('div', class_='introduction__2Nxq').text
         # except:
         #     what_to_expect_ = 'NONE'
-        what_to_expect_ = ddd['product']['itinerary']['introduction']
+        try:
+            what_to_expect_ = ddd['product']['itinerary']['introduction']
+            tmp_y += 1
+            #print(f'what_to_expect: {what_to_expect_}')
+        except:
+            tmp_n += 1
+            try:
+                # browser.implicitly_wait(1.5)
+                browser.get(url_)
+                time.sleep(1)
+
+                # input_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[5]/div[2]/div/div/div[2]/div[1]/div/div/input'
+                # start_time = time.time()
+                # try:
+                #     WebDriverWait(browser, 10).until(EC.element_to_be_clickable((By.XPATH, input_xp)))
+                #
+                # except:
+                #     pass
+                # load_time = time.time() - start_time
+                # print(f'LOAD_Time: {load_time}')
+
+                browser.execute_script("window.scrollBy(0, 2000)")
+
+
+                what_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[1]/div'
+                try:
+                    browser.find_element(By.XPATH, what_xp).click()
+                    time.sleep(0.4)
+                except:
+                    pass
+
+
+                what_txt_all_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[10]/div/div/div[2]/div[1]/div/span'
+                try:
+                    what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
+                    time.sleep(0.3)
+                except:
+                    what_txt_all_ = ''
+
+                print(what_txt_all_)
+
+                what_btn_more_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[2]/section/div/div/p/button'
+
+                try:
+                    browser.find_element(By.XPATH, what_btn_more_xp).click()
+                    time.sleep(0.5)
+                except:
+                    what_btn_more_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[8]/div/div/div[2]/p/button'
+                    try:
+                        browser.find_element(By.XPATH, what_btn_more_xp).click()
+                        time.sleep(0.5)
+                    except:
+                        pass
+
+                source_html = browser.page_source
+                soup = BeautifulSoup(source_html, 'lxml')
+
+                what_to_expect_ = []
+                whatsss_ = soup.find_all('div', class_='itineraryStop__3z3y')
+
+                for w in whatsss_:
+                    what_to_expect_.append(w.find('div', class_='details__3Vov').text)  # .strip())
+
+                # what_txt_s = f'#app > div > div > div.content__1nSk > div.container__1ksl > div:nth-child(8) > div:nth-child(2) > div.productInfoCol__26F0 > div:nth-child(10) > div.sectionWrapper__v4kr > section > div > div > div > div > span'
+                # what_txt_ = browser.find_elements(By.CSS_SELECTOR, what_txt_s)
+                # what_to_expect_ = [elem.get_attribute('text') for elem in what_txt_]
+
+                # browser.close()
+                # browser.quit()
+
+            except:
+                what_to_expect_ = 'NONE'
+
         print(f'what_to_expect: {what_to_expect_}')
+        print(f'tmp_y: {tmp_y} / tmp_n: {tmp_n}')
+
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         addtional_info_ = ddd['product']['description']['additionalInfo']['features']
