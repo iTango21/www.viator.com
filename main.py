@@ -199,7 +199,9 @@ async def get_page_data(session, link_):
                 script_new = str(re.findall('\"pageModel\":(.*?)\"pageMeta\":', str(script_all[5]))).\
                         replace("['{\"destinationId", "{\"destinationId"). \
                         replace("}}},']", "}}}"). \
-                        replace("\\", "_")
+                        replace("\\", "_"). \
+                        replace('\"Tour Bus Stops__\"', '*Tour Bus Stops__*')
+
             except:
                 pass
 
@@ -235,6 +237,7 @@ async def get_page_data(session, link_):
                         break
         except:
             pass
+        print(f'departure_points: {departure_points}')
 
         # departure_time
         try:
@@ -249,47 +252,52 @@ async def get_page_data(session, link_):
             #json.dump(script_new, file, indent=4, ensure_ascii=False)
             file.write(script_new)
 
-        with open("_my_json555.json", "r") as read_file:
-            ddd = json.load(read_file)
+        # with open("_my_json555.json", "r") as read_file:
+        #     ddd = json.load(read_file)
 
 
-        included_ = ddd['product']['description']['inclusions']['features']
+        # included_ = ddd['product']['description']['inclusions']['features']
+        #
+        #
+        #
+        # print(f'included: {included_}')
 
-        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        try:
-            what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
-        except:
-            what_to_expect_ = 'NONE'
-        print(f'what_to_expect: {what_to_expect_}')
-        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        addtional_info_ = ddd['product']['description']['additionalInfo']['features']
-        cancelation_policy_ = ddd['product']['description']['cancellationPolicy']['policies']
-
-        # photo
-        traveler_photos_count = ddd['product']['mediaGallery']['travellerImagesCount']
-        traveler_photos_ = []
-
-        for f in range(traveler_photos_count):
-            traveler_photos_.append((ddd['product']['mediaGallery']['travellerImages'][f]['fullSizeImage']['src']).replace('__u002F', '/'))
-
-        # reviews
-        reviews_count = len(ddd['product']['reviews']['viatorReviews'])
-
-
-        reviews_ = []
-
-
-        for r in range(reviews_count):
-            reviews_.append(
-                {
-                    "title": ddd['product']['reviews']['viatorReviews'][r]['title'],
-                    "rating": ddd['product']['reviews']['viatorReviews'][r]['rating'],
-                    "user": ddd['product']['reviews']['viatorReviews'][r]['user']['nickName'],
-                    "date": ddd['product']['reviews']['viatorReviews'][r]['publishedAt'],
-                    "text": ddd['product']['reviews']['viatorReviews'][r]['text']
-                }
-            )
+        #
+        # # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # try:
+        #     what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
+        # except:
+        #     what_to_expect_ = 'NONE'
+        # print(f'what_to_expect: {what_to_expect_}')
+        # # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #
+        # addtional_info_ = ddd['product']['description']['additionalInfo']['features']
+        # cancelation_policy_ = ddd['product']['description']['cancellationPolicy']['policies']
+        #
+        # # photo
+        # traveler_photos_count = ddd['product']['mediaGallery']['travellerImagesCount']
+        # traveler_photos_ = []
+        #
+        # for f in range(traveler_photos_count):
+        #     traveler_photos_.append((ddd['product']['mediaGallery']['travellerImages'][f]['fullSizeImage']['src']).replace('__u002F', '/'))
+        #
+        # # reviews
+        # reviews_count = len(ddd['product']['reviews']['viatorReviews'])
+        #
+        #
+        # reviews_ = []
+        #
+        #
+        # for r in range(reviews_count):
+        #     reviews_.append(
+        #         {
+        #             "title": ddd['product']['reviews']['viatorReviews'][r]['title'],
+        #             "rating": ddd['product']['reviews']['viatorReviews'][r]['rating'],
+        #             "user": ddd['product']['reviews']['viatorReviews'][r]['user']['nickName'],
+        #             "date": ddd['product']['reviews']['viatorReviews'][r]['publishedAt'],
+        #             "text": ddd['product']['reviews']['viatorReviews'][r]['text']
+        #         }
+        #     )
 
 
 
@@ -306,7 +314,7 @@ async def get_page_data(session, link_):
                 "departure_and_return": {
                     'departure_points': departure_points,
                     'departure_time': departure_time_
-                },
+                }
                 "included": included_,
                 "what_to_expect": what_to_expect_,
                 "addtional_info": addtional_info_,
@@ -347,7 +355,7 @@ async def gather_data():
 
         # for i in range(1, page_count):
         #for url_ in enumerate(url_list[0:1]):
-        for url_ in url_list[0:1]:
+        for url_ in url_list[2:3]:
         #for url_ in url_list:
             # for i in range(1, 2):
 
