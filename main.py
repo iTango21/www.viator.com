@@ -129,7 +129,6 @@ async def get_page_data(session, link_, str_num):
     global ele_info
 
 
-
     async with session.get(url=link_, headers=headers) as response:
 
         response_text = await response.text()
@@ -138,26 +137,21 @@ async def get_page_data(session, link_, str_num):
         # # ЗАЩИТА от БАНА!!!
         # time.sleep(randrange(1, 2))
 
-        print(f'str_num: {str_num}')
+        # print(f'str_num: {str_num}')
 
         url_ = link_
         print(f'url: {url_}')
 
         try:
             name_ = soup.find('h1', class_='title__1Wwg title2__C3R7').text
-            print(name_)
         except:
             name_ = 'NONE'
         print(f'name: {name_}')
 
         try:
             r_c_ = soup.find('div', class_='ratingReviews__2CyF').text
-            #review_count_ = re.findall(r'\d+[,.]\d+', r_c_)
-            review_count = re.findall(r'\d+[,.]|\d+\d+', r_c_)
-            try:
-                review_count_ = review_count[0].replace(',' '')
-            except:
-                review_count_ = review_count[0]
+            review_count = str(re.findall(r'\d+[,.]?\d+', r_c_))
+            review_count_ = str(review_count).replace("['", "").replace("']", "").replace(r",", "")
         except:
             review_count_ = 'NONE'
         print(f'review_count: {review_count_}')
@@ -167,32 +161,32 @@ async def get_page_data(session, link_, str_num):
             total_rating_ = soup.find('span', class_='averageRatingValue__Q1ep').text
         except:
             total_rating_ = 'NONE'
-        print(f'total_rating: {total_rating_}')
+        # print(f'total_rating: {total_rating_}')
 
         breadcrumb_ = soup.find_all('li', class_='crumb__7IyR')#.text
         str_ = ''
         for i in breadcrumb_:
             str_ += i.text + ' > '
         breadcrumb_ = str_[0:-2]
-        print(f'breadcrumb: {breadcrumb_}')
+        # print(f'breadcrumb: {breadcrumb_}')
 
         try:
             price_ = soup.find('span', class_='moneyView__2HPx').text
         except:
             price_ = 'NONE'
-        print(f'price: {price_}')
+        # print(f'price: {price_}')
 
         try:
             overview_ = soup.find('div', class_='overviewWrapper__bMs4').find('div').find('div').text
         except:
             overview_ = 'NONE'
-        print(f'overview_: {overview_}')
+        # print(f'overview_: {overview_}')
 
         departure_points = []
         try:
             departure__ = soup.find('title__1Wwg title4__AH0S')
-
-            # ...достаём: nonce = EeYhZzO0CgtoXgxP
+            #
+            # SCRYPT!!!
             #
             script_all = soup.find_all('script')
             try:
@@ -209,26 +203,12 @@ async def get_page_data(session, link_, str_num):
                         replace("}}},']", "}}}"). \
                         replace("\\", "_"). \
                         replace('__\"', '__*')
-                print('88888888888888888888888888888888888888888888888888888888888')
-
             except:
-                print('00000000000000000000000000000000000000000000000000000000000000000')
+                pass
 
-            # with open(f'_my_script_new_{str_num}.json.', 'w', encoding='utf-8') as file:
-            #     # json.dump(json_all, file, indent=4, ensure_ascii=False)
-            #     file.write(script_new)
-
-            # print('********************************************************')
-            #
-            # print(script_new)
-            #
-            # # with open('_my_json555.json.', 'w', encoding='utf-8') as file:
-            # #     json.dump(script_new, file, indent=4, ensure_ascii=False)
-            #
-            # print('********************************************************')
-
-
-
+            with open(f'_my_script_new_{str_num}.json.', 'w', encoding='utf-8') as file:
+                # json.dump(json_all, file, indent=4, ensure_ascii=False)
+                file.write(script_new)
 
 
             if script_ != "['[],']":
@@ -241,9 +221,8 @@ async def get_page_data(session, link_, str_num):
 
                 try:
                     data_ = json.loads(script_)
-                    print('1+ + + + + + + + + + + + + +1')
                 except:
-                    print('1- - - - - - - - - - - - - -1')
+                    pass
 
 
                 departure_points = []
@@ -257,14 +236,14 @@ async def get_page_data(session, link_, str_num):
                         break
         except:
             pass
-        print(f'departure_points: {departure_points}')
+        # print(f'departure_points: {departure_points}')
 
         # departure_time
         try:
             departure_time_ = soup.find('div', class_='departureTimeLocation__3gU_').text
         except:
             departure_time_ = 'NONE'
-        print(f'departure_time: {departure_time_}')
+        # print(f'departure_time: {departure_time_}')
 
         # included
 
@@ -278,20 +257,20 @@ async def get_page_data(session, link_, str_num):
 
         try:
             ddd = json.loads(script_new)
-            print('2+ + + + + + + + + + + + + +2')
         except:
-            print('2- - - - - - - - - - - - - -2')
+            pass
 
 
 
         included_ = ddd['product']['description']['inclusions']['features']
-        print(f'included: {included_}')
+        # print(f'included: {included_}')
 
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        try:
-            what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
-        except:
-            what_to_expect_ = 'NONE'
+        # try:
+        #     what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
+        # except:
+        #     what_to_expect_ = 'NONE'
+        what_to_expect_ = ddd['product']['itinerary']['introduction']
         print(f'what_to_expect: {what_to_expect_}')
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -323,9 +302,6 @@ async def get_page_data(session, link_, str_num):
         except:
             pass
 
-
-
-        print('********************************************************')
         ele_info.append(
             {
                 "url": url_,
@@ -347,12 +323,6 @@ async def get_page_data(session, link_, str_num):
                 "reviews": reviews_
              }
         )
-        print('********************************************************')
-
-
-
-
-
 
 
 async def gather_data():
@@ -367,7 +337,7 @@ async def gather_data():
         url_list = [line.strip() for line in file.readlines()]
 
     page_count = len(url_list)
-    print(f'PAG.: {page_count}')
+    # print(f'PAG.: {page_count}')
 
     async with aiohttp.ClientSession() as session:
         # try:
@@ -384,7 +354,7 @@ async def gather_data():
         #for url_ in url_list:
             # for i in range(1, 2):
 
-            print(f'URL -------> {url_}')
+            # print(f'URL -------> {url_}')
 
             task = asyncio.create_task(get_page_data(session, url_, str_num))
             tasks.append(task)
@@ -403,23 +373,23 @@ def json_to_csv():
     df.to_csv(r'_my_json2022.csv', index=None)
 
 def main():
-    json_to_csv()
-    # asyncio.run(gather_data())
-    #
-    # finish_time = time.time() - start_time
-    #
-    # # with open('test.txt', 'w+', encoding='utf-8') as file:
-    # #     file.write(ele_info)
-    #
-    # with open('_my_json2022.json.', 'w', encoding='utf-8') as file:
-    #     json.dump(ele_info, file, indent=4, ensure_ascii=False)
-    #
-    # # with open('out.json', 'w+', encoding='utf-8') as file:
-    # #     json.dump(ele_list, file, indent=4, ensure_ascii=False)
-    #
-    # print(f"TIME: {finish_time}")
-    # # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
-    # # print(f"TIME_now: {cur_time}")
+    # json_to_csv()
+    asyncio.run(gather_data())
+
+    finish_time = time.time() - start_time
+
+    # with open('test.txt', 'w+', encoding='utf-8') as file:
+    #     file.write(ele_info)
+
+    with open('_my_json2022.json.', 'w', encoding='utf-8') as file:
+        json.dump(ele_info, file, indent=4, ensure_ascii=False)
+
+    # with open('out.json', 'w+', encoding='utf-8') as file:
+    #     json.dump(ele_list, file, indent=4, ensure_ascii=False)
+
+    print(f"TIME: {finish_time}")
+    # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
+    # print(f"TIME_now: {cur_time}")
 
 
 
