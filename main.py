@@ -32,6 +32,8 @@ import time
 
 import re
 
+import pandas as pd
+
 
 # url = 'https://www.flipkart.com/'
 
@@ -115,7 +117,7 @@ start_time = time.time()
 ele_list = []
 ele_info = []
 
-async def get_page_data(session, link_):
+async def get_page_data(session, link_, str_num):
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "User-Agent": f'{ua_}'
@@ -133,7 +135,13 @@ async def get_page_data(session, link_):
         response_text = await response.text()
         soup = BeautifulSoup(response_text, 'lxml')
 
+        # # ЗАЩИТА от БАНА!!!
+        # time.sleep(randrange(1, 2))
+
+        print(f'str_num: {str_num}')
+
         url_ = link_
+        print(f'url: {url_}')
 
         try:
             name_ = soup.find('h1', class_='title__1Wwg title2__C3R7').text
@@ -200,10 +208,15 @@ async def get_page_data(session, link_):
                         replace("['{\"destinationId", "{\"destinationId"). \
                         replace("}}},']", "}}}"). \
                         replace("\\", "_"). \
-                        replace('\"Tour Bus Stops__\"', '*Tour Bus Stops__*')
+                        replace('__\"', '__*')
+                print('88888888888888888888888888888888888888888888888888888888888')
 
             except:
-                pass
+                print('00000000000000000000000000000000000000000000000000000000000000000')
+
+            # with open(f'_my_script_new_{str_num}.json.', 'w', encoding='utf-8') as file:
+            #     # json.dump(json_all, file, indent=4, ensure_ascii=False)
+            #     file.write(script_new)
 
             # print('********************************************************')
             #
@@ -219,12 +232,19 @@ async def get_page_data(session, link_):
 
 
             if script_ != "['[],']":
-                with open('_my_json.json.', 'w', encoding='utf-8') as file:
-                    # json.dump(json_all, file, indent=4, ensure_ascii=False)
-                    file.write(script_)
+                # with open(f'_my_json_{str_num}.json.', 'w', encoding='utf-8') as file:
+                #     # json.dump(json_all, file, indent=4, ensure_ascii=False)
+                #     file.write(script_)
+                #
+                # with open(f"_my_json_{str_num}.json", "r", encoding='utf-8') as read_file:
+                #     data_ = json.load(read_file)
 
-                with open("_my_json.json", "r") as read_file:
-                    data_ = json.load(read_file)
+                try:
+                    data_ = json.loads(script_)
+                    print('1+ + + + + + + + + + + + + +1')
+                except:
+                    print('1- - - - - - - - - - - - - -1')
+
 
                 departure_points = []
 
@@ -248,56 +268,60 @@ async def get_page_data(session, link_):
 
         # included
 
-        with open('_my_json555.json.', 'w', encoding='utf-8') as file:
-            #json.dump(script_new, file, indent=4, ensure_ascii=False)
-            file.write(script_new)
-
-        # with open("_my_json555.json", "r") as read_file:
+        # with open(f'_my_json555_{str_num}.json.', 'w', encoding='utf-8') as file:
+        #     #json.dump(script_new, file, indent=4, ensure_ascii=False)
+        #     file.write(script_new)
+        #
+        #
+        # with open(f"_my_json555_{str_num}.json", "r", encoding='utf-8') as read_file:
         #     ddd = json.load(read_file)
 
+        try:
+            ddd = json.loads(script_new)
+            print('2+ + + + + + + + + + + + + +2')
+        except:
+            print('2- - - - - - - - - - - - - -2')
 
-        # included_ = ddd['product']['description']['inclusions']['features']
-        #
-        #
-        #
-        # print(f'included: {included_}')
 
-        #
-        # # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        # try:
-        #     what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
-        # except:
-        #     what_to_expect_ = 'NONE'
-        # print(f'what_to_expect: {what_to_expect_}')
-        # # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        #
-        # addtional_info_ = ddd['product']['description']['additionalInfo']['features']
-        # cancelation_policy_ = ddd['product']['description']['cancellationPolicy']['policies']
-        #
-        # # photo
-        # traveler_photos_count = ddd['product']['mediaGallery']['travellerImagesCount']
-        # traveler_photos_ = []
-        #
-        # for f in range(traveler_photos_count):
-        #     traveler_photos_.append((ddd['product']['mediaGallery']['travellerImages'][f]['fullSizeImage']['src']).replace('__u002F', '/'))
-        #
-        # # reviews
-        # reviews_count = len(ddd['product']['reviews']['viatorReviews'])
-        #
-        #
-        # reviews_ = []
-        #
-        #
-        # for r in range(reviews_count):
-        #     reviews_.append(
-        #         {
-        #             "title": ddd['product']['reviews']['viatorReviews'][r]['title'],
-        #             "rating": ddd['product']['reviews']['viatorReviews'][r]['rating'],
-        #             "user": ddd['product']['reviews']['viatorReviews'][r]['user']['nickName'],
-        #             "date": ddd['product']['reviews']['viatorReviews'][r]['publishedAt'],
-        #             "text": ddd['product']['reviews']['viatorReviews'][r]['text']
-        #         }
-        #     )
+
+        included_ = ddd['product']['description']['inclusions']['features']
+        print(f'included: {included_}')
+
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        try:
+            what_to_expect_ = soup.find('span', class_='overflow-wrap: break-word;').text
+        except:
+            what_to_expect_ = 'NONE'
+        print(f'what_to_expect: {what_to_expect_}')
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        addtional_info_ = ddd['product']['description']['additionalInfo']['features']
+        cancelation_policy_ = ddd['product']['description']['cancellationPolicy']['policies']
+
+        # photo
+        traveler_photos_count = ddd['product']['mediaGallery']['travellerImagesCount']
+        traveler_photos_ = []
+
+        for f in range(traveler_photos_count):
+            traveler_photos_.append((ddd['product']['mediaGallery']['travellerImages'][f]['fullSizeImage']['src']).replace('__u002F', '/'))
+
+        # reviews
+        reviews_ = []
+        try:
+            reviews_count = len(ddd['product']['reviews']['viatorReviews'])
+
+            for r in range(reviews_count):
+                reviews_.append(
+                    {
+                        "title": ddd['product']['reviews']['viatorReviews'][r]['title'],
+                        "rating": ddd['product']['reviews']['viatorReviews'][r]['rating'],
+                        "user": ddd['product']['reviews']['viatorReviews'][r]['user']['nickName'],
+                        "date": ddd['product']['reviews']['viatorReviews'][r]['publishedAt'],
+                        "text": ddd['product']['reviews']['viatorReviews'][r]['text']
+                    }
+                )
+        except:
+            pass
 
 
 
@@ -314,7 +338,7 @@ async def get_page_data(session, link_):
                 "departure_and_return": {
                     'departure_points': departure_points,
                     'departure_time': departure_time_
-                }
+                },
                 "included": included_,
                 "what_to_expect": what_to_expect_,
                 "addtional_info": addtional_info_,
@@ -355,39 +379,47 @@ async def gather_data():
 
         # for i in range(1, page_count):
         #for url_ in enumerate(url_list[0:1]):
-        for url_ in url_list[2:3]:
+        str_num = 0
+        for url_ in url_list[0:1154]:
         #for url_ in url_list:
             # for i in range(1, 2):
 
             print(f'URL -------> {url_}')
 
-            task = asyncio.create_task(get_page_data(session, url_))
+            task = asyncio.create_task(get_page_data(session, url_, str_num))
             tasks.append(task)
+            str_num += 1
+
 
         await asyncio.gather(*tasks)
+
 
         # # ЗАЩИТА от БАНА!!!
         # time.sleep(randrange(0, 2))
         # print(f'Обработал {i} / {page_count}')
 
+def json_to_csv():
+    df = pd.read_json(r'_my_json2022.json')
+    df.to_csv(r'_my_json2022.csv', index=None)
 
 def main():
-    asyncio.run(gather_data())
-
-    finish_time = time.time() - start_time
-
-    # with open('test.txt', 'w+', encoding='utf-8') as file:
-    #     file.write(ele_info)
-
-    with open('_my_json2022.json.', 'w', encoding='utf-8') as file:
-        json.dump(ele_info, file, indent=4, ensure_ascii=False)
-
-    # with open('out.json', 'w+', encoding='utf-8') as file:
-    #     json.dump(ele_list, file, indent=4, ensure_ascii=False)
-
-    print(f"TIME: {finish_time}")
-    # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
-    # print(f"TIME_now: {cur_time}")
+    json_to_csv()
+    # asyncio.run(gather_data())
+    #
+    # finish_time = time.time() - start_time
+    #
+    # # with open('test.txt', 'w+', encoding='utf-8') as file:
+    # #     file.write(ele_info)
+    #
+    # with open('_my_json2022.json.', 'w', encoding='utf-8') as file:
+    #     json.dump(ele_info, file, indent=4, ensure_ascii=False)
+    #
+    # # with open('out.json', 'w+', encoding='utf-8') as file:
+    # #     json.dump(ele_list, file, indent=4, ensure_ascii=False)
+    #
+    # print(f"TIME: {finish_time}")
+    # # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
+    # # print(f"TIME_now: {cur_time}")
 
 
 
