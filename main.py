@@ -259,6 +259,9 @@ async def get_page_data(session, link_, str_num):
         #     what_to_expect_ = soup.find('div', class_='introduction__2Nxq').text
         # except:
         #     what_to_expect_ = 'NONE'
+
+
+
         try:
             what_to_expect_ = ddd['product']['itinerary']['introduction']
             tmp_y += 1
@@ -266,9 +269,11 @@ async def get_page_data(session, link_, str_num):
         except:
             tmp_n += 1
             try:
+                what_to_expect_ = []
+
                 # browser.implicitly_wait(1.5)
                 browser.get(url_)
-                time.sleep(1)
+                time.sleep(0.5)
 
                 # input_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[5]/div[2]/div/div/div[2]/div[1]/div/div/input'
                 # start_time = time.time()
@@ -286,17 +291,28 @@ async def get_page_data(session, link_, str_num):
                 what_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[1]/div'
                 try:
                     browser.find_element(By.XPATH, what_xp).click()
-                    time.sleep(0.4)
+                    time.sleep(0.3)
                 except:
                     pass
 
 
                 what_txt_all_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[10]/div/div/div[2]/div[1]/div/span'
+
                 try:
                     what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
                     time.sleep(0.3)
                 except:
-                    what_txt_all_ = ''
+                    what_txt_all_xp = '//*[@id="app"]/div/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[8]/div[2]/section/div/div/div/div/span'
+                    try:
+                        what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
+                        time.sleep(0.3)
+                    except:
+                        what_txt_all_xp = '//*[@id="app"]/div/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[2]/section/div/div/div/div/span'
+                        try:
+                            what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
+                            time.sleep(0.3)
+                        except:
+                            what_txt_all_ = ''
 
                 print(what_txt_all_)
 
@@ -304,19 +320,19 @@ async def get_page_data(session, link_, str_num):
 
                 try:
                     browser.find_element(By.XPATH, what_btn_more_xp).click()
-                    time.sleep(0.5)
+                    time.sleep(0.3)
                 except:
                     what_btn_more_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[8]/div/div/div[2]/p/button'
                     try:
                         browser.find_element(By.XPATH, what_btn_more_xp).click()
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                     except:
                         pass
 
                 source_html = browser.page_source
                 soup = BeautifulSoup(source_html, 'lxml')
 
-                what_to_expect_ = []
+
                 whatsss_ = soup.find_all('div', class_='itineraryStop__3z3y')
 
                 for w in whatsss_:
@@ -328,7 +344,6 @@ async def get_page_data(session, link_, str_num):
 
                 # browser.close()
                 # browser.quit()
-
             except:
                 what_to_expect_ = 'NONE'
 
@@ -374,12 +389,19 @@ async def get_page_data(session, link_, str_num):
                 "breadcrumb": breadcrumb_,
                 "price": price_,
                 "overview": overview_,
+
                 "departure_and_return": {
                     'departure_points': departure_points,
                     'departure_time': departure_time_
                 },
+
                 "included": included_,
-                "what_to_expect": what_to_expect_,
+
+                "what_to_expect": {
+                    "what_to_expect_a": what_txt_all_,
+                    "what_to_expect_p": what_to_expect_
+                },
+
                 "addtional_info": addtional_info_,
                 "cancelation_policy": cancelation_policy_,
                 "traveler_photos": traveler_photos_,
