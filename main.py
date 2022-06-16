@@ -60,11 +60,11 @@ options.add_argument("start-maximized")
 # options.add_argument("--headless")
 options.add_argument('--disable-blink-features=AutomationControlled')
 #
-options.add_experimental_option("excludeSwitches", ["enable-logging"])
-options.add_experimental_option('useAutomationExtension', False)
+# options.add_experimental_option("excludeSwitches", ["enable-logging"])
+# options.add_experimental_option('useAutomationExtension', False)
 browser = webdriver.Chrome(options=options, executable_path=chrome_path)
 
-browser.implicitly_wait(1.5)
+# browser.implicitly_wait(1)
 # # # #
 # # # # END of "Init..."
 # #
@@ -120,8 +120,8 @@ start_time = time.time()
 ele_list = []
 ele_info = []
 
-tmp_y = 0
-tmp_n = 0
+tmp_ = 0
+
 
 async def get_page_data(session, link_, str_num):
     headers = {
@@ -133,7 +133,7 @@ async def get_page_data(session, link_, str_num):
 
     global ele_list
     global ele_info
-    global tmp_y, tmp_n
+    global tmp_
 
 
     async with session.get(url=link_, headers=headers) as response:
@@ -262,93 +262,110 @@ async def get_page_data(session, link_, str_num):
 
 
 
+        # try:
+        #     what_to_expect_ = ddd['product']['itinerary']['introduction']
+        #     tmp_y += 1
+        #     print(f'what_to_expect++++++++++++++++++++++: {what_to_expect_}')
+        # except:
+        #     tmp_n += 1
+
+        what_to_expect_ = []
+        what_txt_all_ = ''
+
+        # browser.implicitly_wait(1.5)
+        browser.get(url_)
+        time.sleep(0.2)
+
+
+
+        # save_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[4]/div/button[2]/span'
+        #           '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[4]/div/button[2]/span'
+        # start_time = time.time()
+        # try:
+        #     WebDriverWait(browser, 10).until(EC.element_to_be_clickable((By.XPATH, save_xp)))
+        #
+        # except:
+        #     pass
+        # load_time = time.time() - start_time
+        # print(f'LOAD_Time: {load_time}')
+
+        browser.execute_script("window.scrollBy(0, 2100)")
+
+
+        what_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[1]/div'
         try:
-            what_to_expect_ = ddd['product']['itinerary']['introduction']
-            tmp_y += 1
-            #print(f'what_to_expect: {what_to_expect_}')
+            browser.find_element(By.XPATH, what_xp).click()
+            time.sleep(0.2)
         except:
-            tmp_n += 1
+            pass
+
+        what_btn_more_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[2]/section/div/div/p/button'
+
+        try:
+            browser.find_element(By.XPATH, what_btn_more_xp).click()
+            time.sleep(0.2)
+        except:
+            what_btn_more_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[8]/div/div/div[2]/p/button'
             try:
-                what_to_expect_ = []
-
-                # browser.implicitly_wait(1.5)
-                browser.get(url_)
-                time.sleep(0.5)
-
-                # input_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[5]/div[2]/div/div/div[2]/div[1]/div/div/input'
-                # start_time = time.time()
-                # try:
-                #     WebDriverWait(browser, 10).until(EC.element_to_be_clickable((By.XPATH, input_xp)))
-                #
-                # except:
-                #     pass
-                # load_time = time.time() - start_time
-                # print(f'LOAD_Time: {load_time}')
-
-                browser.execute_script("window.scrollBy(0, 2000)")
-
-
-                what_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[1]/div'
-                try:
-                    browser.find_element(By.XPATH, what_xp).click()
-                    time.sleep(0.3)
-                except:
-                    pass
-
-
-                what_txt_all_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[10]/div/div/div[2]/div[1]/div/span'
-
-                try:
-                    what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
-                    time.sleep(0.3)
-                except:
-                    what_txt_all_xp = '//*[@id="app"]/div/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[8]/div[2]/section/div/div/div/div/span'
-                    try:
-                        what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
-                        time.sleep(0.3)
-                    except:
-                        what_txt_all_xp = '//*[@id="app"]/div/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[2]/section/div/div/div/div/span'
-                        try:
-                            what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
-                            time.sleep(0.3)
-                        except:
-                            what_txt_all_ = ''
-
-                print(what_txt_all_)
-
-                what_btn_more_xp = '//*[@id="app"]/div[2]/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[2]/section/div/div/p/button'
-
-                try:
-                    browser.find_element(By.XPATH, what_btn_more_xp).click()
-                    time.sleep(0.3)
-                except:
-                    what_btn_more_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[8]/div/div/div[2]/p/button'
-                    try:
-                        browser.find_element(By.XPATH, what_btn_more_xp).click()
-                        time.sleep(0.3)
-                    except:
-                        pass
-
-                source_html = browser.page_source
-                soup = BeautifulSoup(source_html, 'lxml')
-
-
-                whatsss_ = soup.find_all('div', class_='itineraryStop__3z3y')
-
-                for w in whatsss_:
-                    what_to_expect_.append(w.find('div', class_='details__3Vov').text)  # .strip())
-
-                # what_txt_s = f'#app > div > div > div.content__1nSk > div.container__1ksl > div:nth-child(8) > div:nth-child(2) > div.productInfoCol__26F0 > div:nth-child(10) > div.sectionWrapper__v4kr > section > div > div > div > div > span'
-                # what_txt_ = browser.find_elements(By.CSS_SELECTOR, what_txt_s)
-                # what_to_expect_ = [elem.get_attribute('text') for elem in what_txt_]
-
-                # browser.close()
-                # browser.quit()
+                browser.find_element(By.XPATH, what_btn_more_xp).click()
+                time.sleep(0.2)
             except:
-                what_to_expect_ = 'NONE'
+                pass
 
-        print(f'what_to_expect: {what_to_expect_}')
-        print(f'tmp_y: {tmp_y} / tmp_n: {tmp_n}')
+
+        source_html = browser.page_source
+        soup = BeautifulSoup(source_html, 'lxml')
+
+
+        try:
+            what_txt_all_ = soup.find('div', class_='introduction__2Nxq').text
+        except:
+            what_txt_all_ = 'NONE'
+
+        try:
+            whatsss_ = soup.find_all('div', class_='itineraryStop__3z3y')  # details__3Vov
+            for w in whatsss_:
+                what_to_expect_.append(w.find('div', class_='details__3Vov').text)  # .strip())
+        except:
+            what_to_expect_ = 'NONE'
+
+
+        #     what_txt_all_xp = '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[10]/div/div/div[2]/div[1]/div/span'
+        #
+        #     '//*[@id="app"]/div/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[8]/div/div/div[2]/div/div/span'
+        #     '//*[@id="app"]/div[2]/div/div[2]/div[2]/div[6]/div[2]/div[1]/div[10]/div/div/div[2]/div[1]/div/span'
+        #
+        #     try:
+        #         what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
+        #         time.sleep(0.3)
+        #     except:
+        #         what_txt_all_xp = '//*[@id="app"]/div/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[8]/div[2]/section/div/div/div/div/span'
+        #         try:
+        #             what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
+        #             time.sleep(0.3)
+        #         except:
+        #             what_txt_all_xp = '//*[@id="app"]/div/div/div[2]/div[1]/div[6]/div[2]/div[1]/div[10]/div[2]/section/div/div/div/div/span'
+        #             try:
+        #                 what_txt_all_ = browser.find_element(By.XPATH, what_txt_all_xp).text
+        #                 time.sleep(0.3)
+        #             except:
+        #                 pass
+        #
+        #
+        #     # what_txt_s = f'#app > div > div > div.content__1nSk > div.container__1ksl > div:nth-child(8) > div:nth-child(2) > div.productInfoCol__26F0 > div:nth-child(10) > div.sectionWrapper__v4kr > section > div > div > div > div > span'
+        #     # what_txt_ = browser.find_elements(By.CSS_SELECTOR, what_txt_s)
+        #     # what_to_expect_ = [elem.get_attribute('text') for elem in what_txt_]
+        #
+        #     # browser.close()
+        #     # browser.quit()
+        # except:
+        #     what_to_expect_ = 'NONE'
+
+        print(f'what_txt_all: {what_txt_all_}\n')
+        print(f'what_to_expect: {what_to_expect_}\n')
+        tmp_ += 1
+        print(f'= = =  END of {tmp_} = = = <<<<<<<<<<<<<<<<<<<<<<<\n')
+
 
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -454,7 +471,7 @@ async def gather_data():
         # print(f'Обработал {i} / {page_count}')
 
 def json_to_csv():
-    df = pd.read_json(r'_my_json2022.json')
+    df = pd.read_json(r'_my_json555.json')
     df.to_csv(r'_my_json2022.csv', index=None)
 
 def main():
@@ -475,6 +492,9 @@ def main():
     print(f"TIME: {finish_time}")
     # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
     # print(f"TIME_now: {cur_time}")
+
+    browser.close()
+    browser.quit()
 
 
 
