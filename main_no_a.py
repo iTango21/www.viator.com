@@ -394,31 +394,31 @@ def gather_data():
 
 
 def json_to_csv():
-    df = pd.read_json(r'_my_no_a_json2022.json')
+    df = pd.read_json(r'_my_.json')
     df.to_csv(r'_my_no_a_json2022.csv', index=None)
 
 
 def main():
-    # json_to_csv()
-    gather_data()
-
-    finish_time = time.time() - start_time
-
-    # with open('test.txt', 'w+', encoding='utf-8') as file:
-    #     file.write(ele_info)
-
-    with open('_my_no_a_json2022.json.', 'w', encoding='utf-8') as file:
-        json.dump(ele_info, file, indent=4, ensure_ascii=False)
-
-    # with open('out.json', 'w+', encoding='utf-8') as file:
-    #     json.dump(ele_list, file, indent=4, ensure_ascii=False)
-
-    print(f"TIME: {finish_time}")
-    # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
-    # print(f"TIME_now: {cur_time}")
-
-    browser.close()
-    browser.quit()
+    json_to_csv()
+    # gather_data()
+    #
+    # finish_time = time.time() - start_time
+    #
+    # # with open('test.txt', 'w+', encoding='utf-8') as file:
+    # #     file.write(ele_info)
+    #
+    # with open('_my_no_a_json2022.json.', 'w', encoding='utf-8') as file:
+    #     json.dump(ele_info, file, indent=4, ensure_ascii=False)
+    #
+    # # with open('out.json', 'w+', encoding='utf-8') as file:
+    # #     json.dump(ele_list, file, indent=4, ensure_ascii=False)
+    #
+    # print(f"TIME: {finish_time}")
+    # # cur_time = datetime.now().strftime("%d.%m.%Y %H:%M")
+    # # print(f"TIME_now: {cur_time}")
+    #
+    # browser.close()
+    # browser.quit()
 
 
 

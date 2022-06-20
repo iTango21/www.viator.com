@@ -64,56 +64,58 @@ options.add_argument('--disable-blink-features=AutomationControlled')
 # options.add_experimental_option('useAutomationExtension', False)
 browser = webdriver.Chrome(options=options, executable_path=chrome_path)
 
-# browser.implicitly_wait(1)
-# # # #
-# # # # END of "Init..."
-# #
+browser.implicitly_wait(1)
+# # #
+# # # END of "Init..."
+#
 
-#
-#
-# start_ = True
-#
-# url_ = []
-#
-# for pg in range(1, 50):
-#
-#     if start_:
-#         start_ = False
-#         url = f'https://www.viator.com/Iceland/d55-ttd'
-#     else:
-#         url = f'https://www.viator.com/Iceland/d55-ttd/{pg}'
-#
-#     browser.get(url)
-#
-#     first_pg_xp = '//*[@id="pagination"]/li[2]/a'
-#     start_time = time.time()
-#     try:
-#         WebDriverWait(browser, 15).until(EC.element_to_be_clickable((By.XPATH, first_pg_xp)))
-#     except:
-#         pass
-#     finish_time = time.time() - start_time
-#     print(f'Page = {pg}     FP: {finish_time}')
-#
-#     source_html = browser.page_source
-#     # # запись СПАРСЕНОЙ инфы в ХТМЛ-файл
-#     # with open('index.html', 'w', encoding='utf-8') as file:
-#     #     file.write(source_html)
-#
-#     soup = BeautifulSoup(source_html, 'lxml')
-#
-#     el_links_ = soup.find_all("h2", class_='product-card-row-title mb-0 pt-md-4')
-#     for i in el_links_:
-#         el_link_ = i.find('a').get('href')
-#         el_link = f'https://www.viator.com{el_link_}'
-#         url_.append(el_link)
-#
-# # запись ссылок из СПИСКА в файл
-# with open('urls.txt', 'a', encoding='utf-8') as file:
-#     for url in url_:
-#         file.write(f'{url}\n')
-# #
-# # #         = End of 1 =
 
+
+start_ = True
+
+url_ = []
+
+for pg in range(1, 50):
+
+    if start_:
+        start_ = False
+        url = f'https://www.viator.com/Iceland/d55-ttd'
+    else:
+        url = f'https://www.viator.com/Iceland/d55-ttd/{pg}'
+
+    browser.get(url)
+
+    first_pg_xp = '//*[@id="pagination"]/li[2]/a'
+    start_time = time.time()
+    try:
+        WebDriverWait(browser, 15).until(EC.element_to_be_clickable((By.XPATH, first_pg_xp)))
+    except:
+        pass
+    finish_time = time.time() - start_time
+    print(f'Page = {pg}     FP: {finish_time}')
+
+    source_html = browser.page_source
+    # # запись СПАРСЕНОЙ инфы в ХТМЛ-файл
+    # with open('index.html', 'w', encoding='utf-8') as file:
+    #     file.write(source_html)
+
+    soup = BeautifulSoup(source_html, 'lxml')
+
+    el_links_ = soup.find_all("h2", class_='product-card-row-title mb-0 pt-md-4')
+    for i in el_links_:
+        el_link_ = i.find('a').get('href')
+        el_link = f'https://www.viator.com{el_link_}'
+        url_.append(el_link)
+
+# запись ссылок из СПИСКА в файл
+with open('urls.txt', 'a', encoding='utf-8') as file:
+    for url in url_:
+        file.write(f'{url}\n')
+#
+# #         = End of 1 =
+
+
+breakpoint()
 
 start_time = time.time()
 
